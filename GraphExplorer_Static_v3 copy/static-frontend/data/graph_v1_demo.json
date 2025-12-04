@@ -1,0 +1,251 @@
+{
+  "nodes": [
+    {
+      "id": "wood_coverage",
+      "label": "Wood Coverage",
+      "level": "attribute",
+      "group": "materials",
+      "description": "Proportion of visible wall/ceiling area finished in wood (0\u20131)."
+    },
+    {
+      "id": "plant_density",
+      "label": "Plant Density",
+      "level": "attribute",
+      "group": "biophilia",
+      "description": "Visible density of indoor plants or green features (0\u20131)."
+    },
+    {
+      "id": "spatial_clutter",
+      "label": "Spatial Clutter",
+      "level": "attribute",
+      "group": "layout",
+      "description": "Visual and physical clutter / obstruction in the space."
+    },
+    {
+      "id": "glare_index",
+      "label": "Glare Index",
+      "level": "attribute",
+      "group": "lighting",
+      "description": "Subjective glare / harshness of lighting."
+    },
+    {
+      "id": "perceived_warmth",
+      "label": "Perceived Warmth",
+      "level": "mediator",
+      "group": "perceptual",
+      "description": "Subjective thermal / visual warmth of the space."
+    },
+    {
+      "id": "perceived_naturalness",
+      "label": "Perceived Naturalness",
+      "level": "mediator",
+      "group": "perceptual",
+      "description": "Degree to which the space feels natural / biophilic."
+    },
+    {
+      "id": "cognitive_load",
+      "label": "Cognitive Load",
+      "level": "mediator",
+      "group": "cognitive",
+      "description": "Momentary mental effort required to function in the space."
+    },
+    {
+      "id": "positive_affect",
+      "label": "Positive Affect",
+      "level": "mediator",
+      "group": "affective",
+      "description": "Momentary positive mood / calmness / pleasure."
+    },
+    {
+      "id": "state_anxiety",
+      "label": "State Anxiety",
+      "level": "outcome",
+      "group": "affective",
+      "description": "Short-term, situational anxiety level (e.g. STAI-S)."
+    },
+    {
+      "id": "perceived_stress",
+      "label": "Perceived Stress",
+      "level": "outcome",
+      "group": "affective",
+      "description": "Self-reported stress / tension."
+    },
+    {
+      "id": "task_performance",
+      "label": "Task Performance",
+      "level": "outcome",
+      "group": "cognitive",
+      "description": "Performance on a sustained attention / working-memory task."
+    }
+  ],
+  "edges": [
+    {
+      "id": "wood_coverage->perceived_warmth",
+      "from_node": "wood_coverage",
+      "to_node": "perceived_warmth",
+      "status": "supported",
+      "param": {
+        "mean": 0.45,
+        "sd": 0.1,
+        "ci_lower": 0.254,
+        "ci_upper": 0.646
+      }
+    },
+    {
+      "id": "wood_coverage->perceived_naturalness",
+      "from_node": "wood_coverage",
+      "to_node": "perceived_naturalness",
+      "status": "supported",
+      "param": {
+        "mean": 0.4,
+        "sd": 0.12,
+        "ci_lower": 0.16480000000000003,
+        "ci_upper": 0.6352
+      }
+    },
+    {
+      "id": "plant_density->perceived_naturalness",
+      "from_node": "plant_density",
+      "to_node": "perceived_naturalness",
+      "status": "experimentally_validated",
+      "param": {
+        "mean": 0.5,
+        "sd": 0.12,
+        "ci_lower": 0.26480000000000004,
+        "ci_upper": 0.7352
+      }
+    },
+    {
+      "id": "plant_density->positive_affect",
+      "from_node": "plant_density",
+      "to_node": "positive_affect",
+      "status": "supported",
+      "param": {
+        "mean": 0.35,
+        "sd": 0.1,
+        "ci_lower": 0.15399999999999997,
+        "ci_upper": 0.546
+      }
+    },
+    {
+      "id": "spatial_clutter->cognitive_load",
+      "from_node": "spatial_clutter",
+      "to_node": "cognitive_load",
+      "status": "hypothesized",
+      "param": {
+        "mean": 0.3,
+        "sd": 0.1,
+        "ci_lower": 0.10399999999999998,
+        "ci_upper": 0.496
+      }
+    },
+    {
+      "id": "glare_index->cognitive_load",
+      "from_node": "glare_index",
+      "to_node": "cognitive_load",
+      "status": "hypothesized",
+      "param": {
+        "mean": 0.35,
+        "sd": 0.1,
+        "ci_lower": 0.15399999999999997,
+        "ci_upper": 0.546
+      }
+    },
+    {
+      "id": "perceived_warmth->positive_affect",
+      "from_node": "perceived_warmth",
+      "to_node": "positive_affect",
+      "status": "hypothesized",
+      "param": {
+        "mean": 0.25,
+        "sd": 0.08,
+        "ci_lower": 0.0932,
+        "ci_upper": 0.4068
+      }
+    },
+    {
+      "id": "perceived_naturalness->positive_affect",
+      "from_node": "perceived_naturalness",
+      "to_node": "positive_affect",
+      "status": "supported",
+      "param": {
+        "mean": 0.4,
+        "sd": 0.09,
+        "ci_lower": 0.22360000000000002,
+        "ci_upper": 0.5764
+      }
+    },
+    {
+      "id": "positive_affect->state_anxiety",
+      "from_node": "positive_affect",
+      "to_node": "state_anxiety",
+      "status": "supported",
+      "param": {
+        "mean": -0.5,
+        "sd": 0.12,
+        "ci_lower": -0.7352,
+        "ci_upper": -0.26480000000000004
+      }
+    },
+    {
+      "id": "cognitive_load->state_anxiety",
+      "from_node": "cognitive_load",
+      "to_node": "state_anxiety",
+      "status": "hypothesized",
+      "param": {
+        "mean": 0.3,
+        "sd": 0.11,
+        "ci_lower": 0.0844,
+        "ci_upper": 0.5156
+      }
+    },
+    {
+      "id": "cognitive_load->task_performance",
+      "from_node": "cognitive_load",
+      "to_node": "task_performance",
+      "status": "supported",
+      "param": {
+        "mean": -0.35,
+        "sd": 0.1,
+        "ci_lower": -0.546,
+        "ci_upper": -0.15399999999999997
+      }
+    },
+    {
+      "id": "state_anxiety->task_performance",
+      "from_node": "state_anxiety",
+      "to_node": "task_performance",
+      "status": "supported",
+      "param": {
+        "mean": -0.3,
+        "sd": 0.1,
+        "ci_lower": -0.496,
+        "ci_upper": -0.10399999999999998
+      }
+    },
+    {
+      "id": "perceived_naturalness->perceived_stress",
+      "from_node": "perceived_naturalness",
+      "to_node": "perceived_stress",
+      "status": "supported",
+      "param": {
+        "mean": -0.4,
+        "sd": 0.1,
+        "ci_lower": -0.5960000000000001,
+        "ci_upper": -0.20400000000000001
+      }
+    },
+    {
+      "id": "positive_affect->perceived_stress",
+      "from_node": "positive_affect",
+      "to_node": "perceived_stress",
+      "status": "supported",
+      "param": {
+        "mean": -0.35,
+        "sd": 0.1,
+        "ci_lower": -0.546,
+        "ci_upper": -0.15399999999999997
+      }
+    }
+  ]
+}

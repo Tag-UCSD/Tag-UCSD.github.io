@@ -1,0 +1,891 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Graph Explorer – Demo</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --panel-bg: #0b1020;
+      --panel-border: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #a855f7;
+      --accent-soft: rgba(168, 85, 247, 0.25);
+      --danger: #f97373;
+      --supported: #22c55e;
+      --hypothesized: #eab308;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 10px 18px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(to right, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.7));
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    header .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    #graph-container {
+      flex: 2;
+      position: relative;
+      padding: 12px;
+    }
+
+    #cy {
+      position: absolute;
+      inset: 12px;
+      border-radius: 18px;
+      background: radial-gradient(circle at 10% 0, rgba(180, 83, 9, 0.25), transparent 45%),
+                  radial-gradient(circle at 90% 0, rgba(79, 70, 229, 0.35), transparent 55%),
+                  radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.35), transparent 50%),
+                  #020617;
+      box-shadow:
+        0 25px 80px rgba(15, 23, 42, 0.85),
+        inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+      overflow: hidden;
+    }
+
+    /* Side panel */
+    #side-panel {
+      flex: 1;
+      border-left: 1px solid rgba(148, 163, 184, 0.3);
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      min-width: 320px;
+      max-width: 420px;
+    }
+
+    #side-panel h2 {
+      font-size: 15px;
+      margin: 0 0 4px 0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    #side-panel .panel-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    #details {
+      margin-top: 8px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 12px 0 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .badge.status-supported {
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.1);
+    }
+
+    .badge.status-experimentally_validated {
+      border-color: rgba(56, 189, 248, 0.7);
+      color: #e0f2fe;
+      background: rgba(37, 99, 235, 0.15);
+    }
+
+    .badge.status-hypothesized {
+      border-color: rgba(234, 179, 8, 0.7);
+      color: #fef9c3;
+      background: rgba(234, 179, 8, 0.12);
+    }
+
+    .badge.level-attribute {
+      border-color: rgba(56, 189, 248, 0.6);
+      color: #bae6fd;
+      background: rgba(37, 99, 235, 0.18);
+    }
+
+    .badge.level-mediator {
+      border-color: rgba(244, 114, 182, 0.6);
+      color: #f9a8d4;
+      background: rgba(236, 72, 153, 0.18);
+    }
+
+    .badge.level-outcome {
+      border-color: rgba(52, 211, 153, 0.6);
+      color: #a7f3d0;
+      background: rgba(16, 185, 129, 0.18);
+    }
+
+    .param-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin: 2px 0;
+      color: var(--muted);
+    }
+
+    .param-row span.value {
+      color: #e5e7eb;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .edge-list {
+      border-radius: 10px;
+      border: 1px solid rgba(31, 41, 55, 0.8);
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 55%),
+                  rgba(15, 23, 42, 0.9);
+      padding: 6px 6px 2px;
+      margin-bottom: 8px;
+    }
+
+    .edge-item {
+      font-size: 11px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 2px;
+      cursor: default;
+    }
+
+    .edge-item:nth-child(odd) {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .edge-item:nth-child(even) {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .edge-item .edge-label {
+      color: #e5e7eb;
+    }
+
+    .edge-item .edge-effect {
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .edge-item .edge-status {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.85;
+    }
+
+    .evidence-card {
+      border-radius: 10px;
+      padding: 8px 9px;
+      margin-bottom: 6px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: radial-gradient(circle at top, rgba(168, 85, 247, 0.14), transparent 60%),
+                  rgba(15, 23, 42, 0.96);
+      cursor: pointer;
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
+    }
+
+    .evidence-card:hover {
+      border-color: rgba(168, 85, 247, 0.9);
+      box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.4), 0 15px 35px rgba(15, 23, 42, 0.9);
+      transform: translateY(-1px);
+      background: radial-gradient(circle at top, rgba(168, 85, 247, 0.22), transparent 60%),
+                  rgba(15, 23, 42, 0.98);
+    }
+
+    .evidence-title {
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+
+    .evidence-summary {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .evidence-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .evidence-meta span {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+
+    .evidence-doi {
+      font-size: 10px;
+      color: #c4b5fd;
+      margin-top: 6px;
+      text-decoration: underline;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .pill {
+      font-size: 10px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .pill.positive {
+      border-color: rgba(34, 197, 94, 0.6);
+      color: #bbf7d0;
+    }
+
+    .pill.negative {
+      border-color: rgba(239, 68, 68, 0.75);
+      color: #fecaca;
+    }
+
+    .pill.null {
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
+    .pill.mixed {
+      border-color: rgba(249, 115, 22, 0.8);
+      color: #fed7aa;
+    }
+
+    .empty-state {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* Cytoscape styles via classes & data attributes */
+  </style>
+
+  <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Evidence Graph Explorer</h1>
+      <div class="subtitle">Architecture × Environment × Affective & Cognitive Outcomes</div>
+    </div>
+    <div class="subtitle">
+      Click nodes or edges to inspect priors, posteriors, and literature provenance.
+    </div>
+  </header>
+
+  <main>
+    <section id="graph-container">
+      <div id="cy"></div>
+    </section>
+
+    <aside id="side-panel">
+      <h2>Details</h2>
+      <div class="panel-subtitle">Click an edge or node in the graph to see more information.</div>
+      <div id="details">
+        <div class="empty-state">
+          • Click an <strong>edge</strong> to view causal strength and evidence.<br/>
+          • Click an <strong>attribute node</strong> to see its incoming and outgoing links ordered by effect size.<br/>
+          • Click the background to reset the view.
+        </div>
+      </div>
+      <div class="hint">
+        Edges with stronger posteriors appear thicker; color encodes status (hypothesized, supported, experimentally validated).
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const DATA_BASE = "./data";
+    const GRAPH_URL = `${DATA_BASE}/graph_v1_demo.json`;
+    const EDGES_URL = `${DATA_BASE}/edges.json`;
+    let currentGraph = null;
+    let edgesMap = {};
+
+    function fmt(x, digits = 2) {
+      return (x === null || x === undefined) ? "–" : x.toFixed(digits);
+    }
+
+    function clearDetails() {
+      const details = document.getElementById("details");
+      details.innerHTML = `
+        <div class="empty-state">
+          • Click an <strong>edge</strong> to view causal strength and evidence.<br/>
+          • Click an <strong>attribute node</strong> to see its incoming and outgoing links ordered by effect size.<br/>
+          • Click the background to reset the view.
+        </div>
+      `;
+    }
+
+    function renderEdgeDetail(edgeDetail) {
+      const details = document.getElementById("details");
+      const p = edgeDetail.param;
+      const mean = p.mean;
+      const ci = `[${fmt(p.ci_lower)}, ${fmt(p.ci_upper)}]`;
+
+      details.innerHTML = "";
+
+      const title = document.createElement("div");
+      title.className = "section-title";
+      title.textContent = "Edge";
+      details.appendChild(title);
+
+      const header = document.createElement("div");
+      header.style.marginBottom = "8px";
+      header.innerHTML = `
+        <div style="font-size:13px; margin-bottom:4px;">
+          <strong>${edgeDetail.from_node}</strong>
+          <span style="opacity:0.65;"> → </span>
+          <strong>${edgeDetail.to_node}</strong>
+        </div>
+      `;
+      details.appendChild(header);
+
+      const statusRow = document.createElement("div");
+      const statusBadge = document.createElement("span");
+      statusBadge.className = "badge status-" + edgeDetail.status;
+      statusBadge.textContent = edgeDetail.status.replace("_", " ");
+      statusRow.appendChild(statusBadge);
+      details.appendChild(statusRow);
+
+      const statsTitle = document.createElement("div");
+      statsTitle.className = "section-title";
+      statsTitle.textContent = "Posterior (demo)";
+      details.appendChild(statsTitle);
+
+      const statsBlock = document.createElement("div");
+      statsBlock.innerHTML = `
+        <div class="param-row">
+          <span>Mean effect</span>
+          <span class="value">${fmt(mean)}</span>
+        </div>
+        <div class="param-row">
+          <span>SD</span>
+          <span class="value">${fmt(p.sd)}</span>
+        </div>
+        <div class="param-row">
+          <span>95% CI</span>
+          <span class="value">${ci}</span>
+        </div>
+      `;
+      details.appendChild(statsBlock);
+
+      const evTitle = document.createElement("div");
+      evTitle.className = "section-title";
+      evTitle.textContent = "Evidence provenance";
+      details.appendChild(evTitle);
+
+      if (!edgeDetail.evidence || edgeDetail.evidence.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No specific studies attached yet. This link is currently informed by priors or related domains.";
+        details.appendChild(empty);
+      } else {
+        edgeDetail.evidence.forEach((ev, idx) => {
+          const card = document.createElement("div");
+          card.className = "evidence-card";
+
+          // effect direction pill
+          let directionClass = "pill null";
+          if (ev.effect_direction === "beneficial") directionClass = "pill positive";
+          else if (ev.effect_direction === "harmful") directionClass = "pill negative";
+          else if (ev.effect_direction === "mixed") directionClass = "pill mixed";
+
+          card.innerHTML = `
+            <div class="evidence-title">${idx + 1}. ${ev.title}</div>
+            <div class="evidence-summary">${ev.summary}</div>
+            <div class="pill-row">
+              <span class="${directionClass}">${ev.effect_direction || "direction"}</span>
+              ${ev.quality ? `<span class="pill">${ev.quality} quality</span>` : ""}
+            </div>
+            <div class="evidence-meta">
+              ${ev.population ? `<span>${ev.population}</span>` : ""}
+              ${ev.design ? `<span>${ev.design}</span>` : ""}
+              ${ev.outcome_measures && ev.outcome_measures.length
+                ? `<span>Outcomes: ${ev.outcome_measures.join(", ")}</span>` : ""}
+            </div>
+            ${ev.doi ? `<div class="evidence-doi">DOI: ${ev.doi}</div>` : ""}
+          `;
+
+          if (ev.doi) {
+            card.addEventListener("click", () => {
+              const doi = ev.doi.trim();
+              if (doi) {
+                window.open("https://doi.org/" + doi, "_blank", "noopener");
+              }
+            });
+          }
+
+          details.appendChild(card);
+        });
+      }
+    }
+
+    function renderAttributeDetails(nodeData, graph) {
+      const details = document.getElementById("details");
+      if (!graph) {
+        clearDetails();
+        return;
+      }
+
+      const incoming = graph.edges
+        .filter(e => e.to_node === nodeData.id)
+        .slice()
+        .sort((a, b) => Math.abs(b.param.mean) - Math.abs(a.param.mean));
+
+      const outgoing = graph.edges
+        .filter(e => e.from_node === nodeData.id)
+        .slice()
+        .sort((a, b) => Math.abs(b.param.mean) - Math.abs(a.param.mean));
+
+      const nodeTitle = document.createElement("div");
+      nodeTitle.className = "section-title";
+      nodeTitle.textContent = "Attribute";
+      details.innerHTML = "";
+      details.appendChild(nodeTitle);
+
+      const header = document.createElement("div");
+      header.style.marginBottom = "8px";
+      header.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div style="font-size:14px;"><strong>${nodeData.label}</strong></div>
+          <div>
+            <span class="badge level-${nodeData.level}">${nodeData.level}</span>
+          </div>
+        </div>
+        ${nodeData.description ? `<div style="font-size:11px;color:var(--muted);">${nodeData.description}</div>` : ""}
+      `;
+      details.appendChild(header);
+
+      const outTitle = document.createElement("div");
+      outTitle.className = "section-title";
+      outTitle.textContent = "Outgoing edges (strongest first)";
+      details.appendChild(outTitle);
+
+      if (outgoing.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No outgoing edges from this attribute in the current demo graph.";
+        details.appendChild(empty);
+      } else {
+        const container = document.createElement("div");
+        container.className = "edge-list";
+
+        outgoing.forEach(ed => {
+          const other = (ed.to_node || "").toString();
+          const item = document.createElement("div");
+          item.className = "edge-item";
+
+          const left = document.createElement("div");
+          left.className = "edge-label";
+          left.textContent = `${nodeData.id} → ${other}`;
+
+          const right = document.createElement("div");
+          right.style.display = "flex";
+          right.style.gap = "6px";
+          right.style.alignItems = "baseline";
+          right.innerHTML = `
+            <span class="edge-effect">β=${fmt(ed.param.mean)}</span>
+            <span class="edge-status">${ed.status.replace("_", " ")}</span>
+          `;
+
+          item.appendChild(left);
+          item.appendChild(right);
+          container.appendChild(item);
+        });
+
+        details.appendChild(container);
+      }
+
+      const inTitle = document.createElement("div");
+      inTitle.className = "section-title";
+      inTitle.textContent = "Incoming edges (strongest first)";
+      details.appendChild(inTitle);
+
+      if (incoming.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No incoming edges to this attribute in the current demo graph.";
+        details.appendChild(empty);
+      } else {
+        const container = document.createElement("div");
+        container.className = "edge-list";
+
+        incoming.forEach(ed => {
+          const other = (ed.from_node || "").toString();
+          const item = document.createElement("div");
+          item.className = "edge-item";
+
+          const left = document.createElement("div");
+          left.className = "edge-label";
+          left.textContent = `${other} → ${nodeData.id}`;
+
+          const right = document.createElement("div");
+          right.style.display = "flex";
+          right.style.gap = "6px";
+          right.style.alignItems = "baseline";
+          right.innerHTML = `
+            <span class="edge-effect">β=${fmt(ed.param.mean)}</span>
+            <span class="edge-status">${ed.status.replace("_", " ")}</span>
+          `;
+
+          item.appendChild(left);
+          item.appendChild(right);
+          container.appendChild(item);
+        });
+
+        details.appendChild(container);
+      }
+
+      const hint = document.createElement("div");
+      hint.className = "hint";
+      hint.textContent = "Click an edge touching this attribute to inspect full evidence cards and open DOIs.";
+      details.appendChild(hint);
+    }
+
+    function renderGenericNodeDetails(nodeData) {
+      const details = document.getElementById("details");
+      details.innerHTML = "";
+
+      const nodeTitle = document.createElement("div");
+      nodeTitle.className = "section-title";
+      nodeTitle.textContent = "Node";
+      details.appendChild(nodeTitle);
+
+      const header = document.createElement("div");
+      header.style.marginBottom = "8px";
+      header.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div style="font-size:14px;"><strong>${nodeData.label}</strong></div>
+          <div><span class="badge level-${nodeData.level}">${nodeData.level}</span></div>
+        </div>
+        ${nodeData.description ? `<div style="font-size:11px;color:var(--muted);">${nodeData.description}</div>` : ""}
+      `;
+      details.appendChild(header);
+
+      const hint = document.createElement("div");
+      hint.className = "hint";
+      hint.textContent = "Click an adjacent edge to see causal strength and study provenance.";
+      details.appendChild(hint);
+    }
+
+    function applyBandLayout(cy, graph) {
+      const container = document.getElementById("cy");
+      const width = container.clientWidth || 800;
+
+      const nodes = cy.nodes();
+      const attrs = [];
+      const meds = [];
+      const outs = [];
+
+      nodes.forEach(n => {
+        const level = n.data("level");
+        if (level === "attribute") attrs.push(n);
+        else if (level === "mediator") meds.push(n);
+        else if (level === "outcome") outs.push(n);
+      });
+
+      function placeBand(nodesArr, y) {
+        const count = nodesArr.length;
+        if (count === 0) return;
+        const spacing = width / (count + 1);
+        nodesArr.forEach((n, idx) => {
+          const x = spacing * (idx + 1);
+          n.position({ x, y });
+        });
+      }
+
+      placeBand(attrs, 100);   // top third
+      placeBand(meds, 300);    // middle
+      placeBand(outs, 500);    // bottom
+
+      cy.fit(cy.elements(), 40);
+    }
+
+    function highlightSelection(cy, target) {
+      cy.elements().removeClass("selected");
+      cy.elements().removeClass("faded");
+
+      if (!target) return;
+
+      let neighborhood;
+      if (target.isNode && target.isNode()) {
+        neighborhood = target.closedNeighborhood();
+      } else if (target.isEdge && target.isEdge()) {
+        const nodes = target.connectedNodes();
+        neighborhood = nodes.union(target);
+      } else {
+        return;
+      }
+
+      target.addClass("selected");
+      neighborhood.addClass("selected");
+      cy.elements().difference(neighborhood).addClass("faded");
+    }
+
+    async function init() {
+      const container = document.getElementById("cy");
+
+      const [graphRes, edgesRes] = await Promise.all([
+        fetch(GRAPH_URL),
+        fetch(EDGES_URL),
+      ]);
+
+      if (!graphRes.ok) {
+        console.error("Failed to fetch graph", await graphRes.text());
+        return;
+      }
+      if (!edgesRes.ok) {
+        console.error("Failed to fetch edges", await edgesRes.text());
+        return;
+      }
+
+      const graph = await graphRes.json();
+      edgesMap = await edgesRes.json();
+      currentGraph = graph;
+
+      const elements = [];
+
+      graph.nodes.forEach(node => {
+        elements.push({
+          data: {
+            id: node.id,
+            label: node.label,
+            level: node.level,
+            group: node.group || "",
+            description: node.description || ""
+          }
+        });
+      });
+
+      graph.edges.forEach(edge => {
+        elements.push({
+          data: {
+            id: edge.id,
+            source: edge.from_node,
+            target: edge.to_node,
+            status: edge.status,
+            mean: edge.param?.mean ?? 0
+          }
+        });
+      });
+
+      const cy = cytoscape({
+        container,
+        elements,
+        wheelSensitivity: 0.15,
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'shape': 'round-rectangle',
+              'label': 'data(label)',
+              "color": "#e5e7eb",
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'text-wrap': 'wrap',
+              'text-max-width': 120,
+              'background-color': '#e5e7eb',
+              'border-width': 1,
+              'border-color': '#9ca3af',
+              'font-size': 12,
+              'width': 150,
+              'height': 60,
+              "box-shadow": "0 10px 25px rgba(15, 23, 42, 0.8)"
+            }
+          },
+          {
+            selector: "node[level = 'attribute']",
+            style: {
+              "border-color": "rgba(56, 189, 248, 0.9)",
+              "background-color": "rgba(15, 23, 42, 0.95)"
+            }
+          },
+          {
+            selector: "node[level = 'mediator']",
+            style: {
+              "border-color": "rgba(244, 114, 182, 0.9)",
+              "background-color": "rgba(15, 23, 42, 0.95)"
+            }
+          },
+          {
+            selector: "node[level = 'outcome']",
+            style: {
+              "border-color": "rgba(52, 211, 153, 0.9)",
+              "background-color": "rgba(15, 23, 42, 0.95)"
+            }
+          },
+          {
+            selector: "edge",
+            style: {
+              "curve-style": "bezier",
+              "width": "mapData(mean, -0.6, 0.6, 1, 6)",
+              "line-color": "rgba(148, 163, 184, 0.9)",
+              "target-arrow-color": "rgba(148, 163, 184, 0.9)",
+              "target-arrow-shape": "triangle",
+              "arrow-scale": 0.7,
+              "opacity": 0.85
+            }
+          },
+          {
+            selector: "edge[status = 'supported']",
+            style: {
+              "line-color": "rgba(34, 197, 94, 0.95)",
+              "target-arrow-color": "rgba(34, 197, 94, 0.95)"
+            }
+          },
+          {
+            selector: "edge[status = 'experimentally_validated']",
+            style: {
+              "line-color": "rgba(56, 189, 248, 0.95)",
+              "target-arrow-color": "rgba(56, 189, 248, 0.95)"
+            }
+          },
+          {
+            selector: "edge[status = 'hypothesized']",
+            style: {
+              "line-color": "rgba(234, 179, 8, 0.95)",
+              "target-arrow-color": "rgba(234, 179, 8, 0.95)"
+            }
+          },
+          {
+            selector: ".selected",
+            style: {
+              "border-color": varAccentColor(),
+              "border-width": 2,
+              "line-color": varAccentColor(),
+              "target-arrow-color": varAccentColor(),
+              'background-opacity': 1,
+              'opacity': 1
+            }
+          },
+          {
+            selector: ".faded",
+            style: {
+              "opacity": 0.15
+            }
+          }
+        ]
+      });
+
+      applyBandLayout(cy, graph);
+
+      // Reset on background tap
+      cy.on("tap", function (evt) {
+        if (evt.target === cy) {
+          cy.elements().removeClass("selected");
+          cy.elements().removeClass("faded");
+          clearDetails();
+        }
+      });
+
+      cy.on("tap", "node", function (evt) {
+        const node = evt.target;
+        const data = node.data();
+        highlightSelection(cy, node);
+
+        if (data.level === "attribute") {
+          renderAttributeDetails(data, graph);
+        } else {
+          renderGenericNodeDetails(data);
+        }
+      });
+
+      cy.on("tap", "edge", async function (evt) {
+        const edge = evt.target;
+        highlightSelection(cy, edge);
+
+        const detail = edgesMap[edge.id()];
+        if (!detail) {
+          console.error("No static detail found for edge", edge.id());
+          return;
+        }
+        renderEdgeDetail(detail);
+      });
+    }
+
+    function varAccentColor() {
+      return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#a855f7";
+    }
+
+    window.addEventListener("load", () => {
+      init().catch(err => console.error(err));
+    });
+  </script>
+</body>
+</html>

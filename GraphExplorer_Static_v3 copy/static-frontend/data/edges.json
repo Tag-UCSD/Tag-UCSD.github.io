@@ -1,0 +1,277 @@
+{
+  "wood_coverage->perceived_warmth": {
+    "id": "wood_coverage->perceived_warmth",
+    "from_node": "wood_coverage",
+    "to_node": "perceived_warmth",
+    "status": "supported",
+    "param": {
+      "mean": 0.45,
+      "sd": 0.1,
+      "ci_lower": 0.254,
+      "ci_upper": 0.646
+    },
+    "evidence": [
+      {
+        "id": "li2021_wood_use",
+        "title": "Effect of the degree of wood use on the visual psychological response of wooden indoor spaces",
+        "summary": "Medium wood coverage (\u224835\u201365%) in interiors was associated with higher ratings of naturalness, warmth, relaxation, and desire to use the space compared to low coverage.",
+        "effect_direction": "beneficial",
+        "population": "Adults in controlled visual simulation",
+        "design": "Within-subjects lab experiment",
+        "outcome_measures": [
+          "Perceived warmth",
+          "Perceived relaxation"
+        ],
+        "doi": "10.1007/s00226-021-01320-7",
+        "quality": "moderate",
+        "notes": "Inverse V-shaped relationship with very high wood coverage reducing comfort."
+      }
+    ]
+  },
+  "wood_coverage->perceived_naturalness": {
+    "id": "wood_coverage->perceived_naturalness",
+    "from_node": "wood_coverage",
+    "to_node": "perceived_naturalness",
+    "status": "supported",
+    "param": {
+      "mean": 0.4,
+      "sd": 0.12,
+      "ci_lower": 0.16480000000000003,
+      "ci_upper": 0.6352
+    },
+    "evidence": [
+      {
+        "id": "jalilzadehazhari2019_wood_surfaces",
+        "title": "Material properties of wooden surfaces used in interiors and their influence on physiological responses",
+        "summary": "Visual exposure to indoor wooden surfaces generally increased feelings of comfort and naturalness, with some evidence of reduced sympathetic activation.",
+        "effect_direction": "beneficial",
+        "population": "University students in interior mock-ups",
+        "design": "Lab-based exposure study",
+        "outcome_measures": [
+          "Perceived naturalness",
+          "Comfort",
+          "Physiological arousal"
+        ],
+        "doi": "10.1080/17480272.2019.1575901",
+        "quality": "moderate"
+      }
+    ]
+  },
+  "plant_density->perceived_naturalness": {
+    "id": "plant_density->perceived_naturalness",
+    "from_node": "plant_density",
+    "to_node": "perceived_naturalness",
+    "status": "experimentally_validated",
+    "param": {
+      "mean": 0.5,
+      "sd": 0.12,
+      "ci_lower": 0.26480000000000004,
+      "ci_upper": 0.7352
+    },
+    "evidence": [
+      {
+        "id": "yin2020_biophilic_vr",
+        "title": "Effects of biophilic indoor environment on stress and anxiety recovery: A VR experiment",
+        "summary": "VR offices with biophilic elements (plants, natural materials) produced greater reductions in stress and anxiety compared to a non-biophilic office.",
+        "effect_direction": "beneficial",
+        "population": "100 adults in virtual office environments",
+        "design": "Between-subjects VR experiment",
+        "outcome_measures": [
+          "State anxiety",
+          "Heart rate variability",
+          "Skin conductance"
+        ],
+        "doi": "10.1016/j.envint.2019.105427",
+        "quality": "high"
+      },
+      {
+        "id": "lee2015_indoor_plants",
+        "title": "Interaction with indoor plants may reduce psychological and physiological stress",
+        "summary": "Active interaction with indoor plants lowered diastolic blood pressure and sympathetic activity relative to a computer task, and increased feelings of comfort and naturalness.",
+        "effect_direction": "beneficial",
+        "population": "Young adults (mean age ~25 years)",
+        "design": "Randomized crossover experiment",
+        "outcome_measures": [
+          "Heart rate variability",
+          "Blood pressure",
+          "Subjective comfort"
+        ],
+        "doi": "10.1186/s40101-015-0060-8",
+        "quality": "high"
+      }
+    ]
+  },
+  "plant_density->positive_affect": {
+    "id": "plant_density->positive_affect",
+    "from_node": "plant_density",
+    "to_node": "positive_affect",
+    "status": "supported",
+    "param": {
+      "mean": 0.35,
+      "sd": 0.1,
+      "ci_lower": 0.15399999999999997,
+      "ci_upper": 0.546
+    },
+    "evidence": [
+      {
+        "id": "yin2020_biophilic_vr_positive",
+        "title": "Effects of biophilic indoor environment on stress and anxiety recovery: A VR experiment",
+        "summary": "Participants in biophilic conditions reported more positive mood after stress induction than those in control offices.",
+        "effect_direction": "beneficial",
+        "population": "Adults in virtual offices",
+        "design": "Between-subjects VR experiment",
+        "outcome_measures": [
+          "State anxiety",
+          "Mood ratings"
+        ],
+        "doi": "10.1016/j.envint.2019.105427",
+        "quality": "high"
+      }
+    ]
+  },
+  "spatial_clutter->cognitive_load": {
+    "id": "spatial_clutter->cognitive_load",
+    "from_node": "spatial_clutter",
+    "to_node": "cognitive_load",
+    "status": "hypothesized",
+    "param": {
+      "mean": 0.3,
+      "sd": 0.1,
+      "ci_lower": 0.10399999999999998,
+      "ci_upper": 0.496
+    },
+    "evidence": []
+  },
+  "glare_index->cognitive_load": {
+    "id": "glare_index->cognitive_load",
+    "from_node": "glare_index",
+    "to_node": "cognitive_load",
+    "status": "hypothesized",
+    "param": {
+      "mean": 0.35,
+      "sd": 0.1,
+      "ci_lower": 0.15399999999999997,
+      "ci_upper": 0.546
+    },
+    "evidence": []
+  },
+  "perceived_warmth->positive_affect": {
+    "id": "perceived_warmth->positive_affect",
+    "from_node": "perceived_warmth",
+    "to_node": "positive_affect",
+    "status": "hypothesized",
+    "param": {
+      "mean": 0.25,
+      "sd": 0.08,
+      "ci_lower": 0.0932,
+      "ci_upper": 0.4068
+    },
+    "evidence": []
+  },
+  "perceived_naturalness->positive_affect": {
+    "id": "perceived_naturalness->positive_affect",
+    "from_node": "perceived_naturalness",
+    "to_node": "positive_affect",
+    "status": "supported",
+    "param": {
+      "mean": 0.4,
+      "sd": 0.09,
+      "ci_lower": 0.22360000000000002,
+      "ci_upper": 0.5764
+    },
+    "evidence": [
+      {
+        "id": "yin2020_biophilic_vr_mood",
+        "title": "Effects of biophilic indoor environment on stress and anxiety recovery: A VR experiment",
+        "summary": "Biophilic interiors improved stress recovery and reduced anxiety, consistent with higher perceived naturalness and restorative quality.",
+        "effect_direction": "beneficial",
+        "population": "Adults in virtual offices",
+        "design": "Between-subjects VR experiment",
+        "outcome_measures": [
+          "Perceived restorativeness",
+          "State anxiety"
+        ],
+        "doi": "10.1016/j.envint.2019.105427",
+        "quality": "high"
+      }
+    ]
+  },
+  "positive_affect->state_anxiety": {
+    "id": "positive_affect->state_anxiety",
+    "from_node": "positive_affect",
+    "to_node": "state_anxiety",
+    "status": "supported",
+    "param": {
+      "mean": -0.5,
+      "sd": 0.12,
+      "ci_lower": -0.7352,
+      "ci_upper": -0.26480000000000004
+    },
+    "evidence": []
+  },
+  "cognitive_load->state_anxiety": {
+    "id": "cognitive_load->state_anxiety",
+    "from_node": "cognitive_load",
+    "to_node": "state_anxiety",
+    "status": "hypothesized",
+    "param": {
+      "mean": 0.3,
+      "sd": 0.11,
+      "ci_lower": 0.0844,
+      "ci_upper": 0.5156
+    },
+    "evidence": []
+  },
+  "cognitive_load->task_performance": {
+    "id": "cognitive_load->task_performance",
+    "from_node": "cognitive_load",
+    "to_node": "task_performance",
+    "status": "supported",
+    "param": {
+      "mean": -0.35,
+      "sd": 0.1,
+      "ci_lower": -0.546,
+      "ci_upper": -0.15399999999999997
+    },
+    "evidence": []
+  },
+  "state_anxiety->task_performance": {
+    "id": "state_anxiety->task_performance",
+    "from_node": "state_anxiety",
+    "to_node": "task_performance",
+    "status": "supported",
+    "param": {
+      "mean": -0.3,
+      "sd": 0.1,
+      "ci_lower": -0.496,
+      "ci_upper": -0.10399999999999998
+    },
+    "evidence": []
+  },
+  "perceived_naturalness->perceived_stress": {
+    "id": "perceived_naturalness->perceived_stress",
+    "from_node": "perceived_naturalness",
+    "to_node": "perceived_stress",
+    "status": "supported",
+    "param": {
+      "mean": -0.4,
+      "sd": 0.1,
+      "ci_lower": -0.5960000000000001,
+      "ci_upper": -0.20400000000000001
+    },
+    "evidence": []
+  },
+  "positive_affect->perceived_stress": {
+    "id": "positive_affect->perceived_stress",
+    "from_node": "positive_affect",
+    "to_node": "perceived_stress",
+    "status": "supported",
+    "param": {
+      "mean": -0.35,
+      "sd": 0.1,
+      "ci_lower": -0.546,
+      "ci_upper": -0.15399999999999997
+    },
+    "evidence": []
+  }
+}
